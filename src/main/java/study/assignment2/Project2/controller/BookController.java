@@ -30,7 +30,22 @@ public class BookController {
     }
 
     /**
-     * API to add multiple books to the DB
+     * API to add multiple books to the DB iteratively
+     *
+     * @param books List of books to be added
+     * @return number of books added to the DB
+     */
+    @PostMapping("/book/add")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String addMultipleBooksIteratively(@RequestBody List<Book> books) {
+        logger.info("Adding " + books.size() + " books");
+        long start = System.currentTimeMillis();
+        bookService.insertBooksIteratively(books);
+        return books.size() + " Books Added to the DB & it took " + (System.currentTimeMillis() - start) + " time";
+    }
+
+    /**
+     * API to add multiple books to the DB in batch
      *
      * @param books List of books to be added
      * @return number of books added to the DB
@@ -45,7 +60,7 @@ public class BookController {
     }
 
     /**
-     * API to add multiple books to the DB in parallel
+     * API to add multiple books to the DB in parallel using parallelStream
      *
      * @param books List of books to be added
      * @return number of books added to the DB
@@ -77,7 +92,7 @@ public class BookController {
     /**
      * API to delete all books from the DB
      *
-     * @return Time taken to delte all the books
+     * @return Time taken to delete all the books
      */
     @DeleteMapping("/book/delete/all")
     @ResponseStatus(HttpStatus.CREATED)

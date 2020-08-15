@@ -14,7 +14,7 @@ import java.util.List;
 public class BookServiceImpl implements BookService {
 
     // Number of threads to create
-    private final int THREADS = 4;
+    private final int THREADS = 5;
     Logger logger = LoggerFactory.getLogger(BookServiceImpl.class);
     @Autowired
     BookRepository bookRepository;
@@ -34,15 +34,24 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public int insertBooksIteratively(List<Book> books) {
+        for (Book book :
+                books) {
+            bookRepository.save(book);
+        }
+        return books.size();
+    }
+
+    @Override
     public int insertBooks(List<Book> books) {
-        bookRepository.insert(books);
+        bookRepository.saveAll(books);
         return books.size();
     }
 
     @Override
     public int insertBooksInParallel(List<Book> books) {
         books.parallelStream().forEach(book ->
-                bookRepository.insert(book));
+                bookRepository.save(book));
         return books.size();
     }
 
@@ -50,13 +59,14 @@ public class BookServiceImpl implements BookService {
     public void insertBooksThread(List<Book> books) {
         MyThread[] threads;
         int i = 0;
+        // Thread + 1 because we may encounter an extra partition for 26/5 = (5*5 + 1) in this case 1 book will be processed in the extra thread.
         threads = new MyThread[THREADS + 1];
         for (List<Book> list : ListUtils.partition(books, books.size() / THREADS)) {
             threads[i] = new MyThread(bookRepository, list);
             if (list != null) {
                 threads[i].start();
+                i++;
             }
-            i++;
         }
         for (MyThread thread : threads) {
             try {
@@ -90,8 +100,7 @@ public class BookServiceImpl implements BookService {
          */
         @Override
         public void run() {
-            for (Book book : books)
-                bookRepository.insert(book);
+            bookRepository.saveAll(books);
         }
     }
 }

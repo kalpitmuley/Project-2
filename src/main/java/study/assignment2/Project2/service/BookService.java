@@ -10,6 +10,8 @@ public interface BookService {
 
     List<Book> getAllBooks();
 
+    int insertBooksIteratively(List<Book> books);
+
     int insertBooks(List<Book> books);
 
     int insertBooksInParallel(List<Book> books);
