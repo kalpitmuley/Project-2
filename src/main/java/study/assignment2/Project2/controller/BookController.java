@@ -29,6 +29,13 @@ public class BookController {
         return bookList;
     }
 
+    @GetMapping("/book/get/author")
+    public List<Book> getBooksByAuthor(@RequestParam("q") String authorName) {
+        List<Book> bookList = bookService.getBookByAuthor(authorName);
+        logger.info("List returned " + bookList.size() + " books");
+        return bookList;
+    }
+
     /**
      * API to add multiple books to the DB iteratively
      *

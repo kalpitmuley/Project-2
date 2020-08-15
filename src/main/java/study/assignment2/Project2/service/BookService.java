@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface BookService {
 
-    Book getBookByName(String name);
-
     List<Book> getAllBooks();
+
+    List<Book> getBookByAuthor(String author);
 
     int insertBooksIteratively(List<Book> books);
 

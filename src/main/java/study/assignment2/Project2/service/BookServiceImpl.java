@@ -20,16 +20,16 @@ public class BookServiceImpl implements BookService {
     BookRepository bookRepository;
 
     @Override
-    public Book getBookByName(String name) {
-        Book book = bookRepository.findByName(name);
-        logger.info("Returned book is: " + book);
-        return book;
-    }
-
-    @Override
     public List<Book> getAllBooks() {
         List<Book> books;
         books = bookRepository.findAll();
+        return books;
+    }
+
+    @Override
+    public List<Book> getBookByAuthor(String author) {
+        List<Book> books;
+        books = bookRepository.findByAuthorName(author);
         return books;
     }
 
