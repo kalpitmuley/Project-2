@@ -58,23 +58,28 @@ public class BookServiceImpl implements BookService {
     @Override
     public void insertBooksThread(List<Book> books) {
         MyThread[] threads;
-        int i = 0;
-        // Thread + 1 because we may encounter an extra partition for 26/5 = (5*5 + 1) in this case 1 book will be processed in the extra thread.
-        threads = new MyThread[THREADS + 1];
-        for (List<Book> list : ListUtils.partition(books, books.size() / THREADS)) {
-            threads[i] = new MyThread(bookRepository, list);
-            if (list != null) {
-                threads[i].start();
-                i++;
+        if (books == null) return;
+        if (books.size() >= THREADS) {
+            int i = 0;
+            // Thread + 1 because we may encounter an extra partition for 26/5 = (5*5 + 1) in this case 1 book will be processed in the extra thread.
+            threads = new MyThread[THREADS + 1];
+            for (List<Book> list : ListUtils.partition(books, books.size() / THREADS)) {
+                threads[i] = new MyThread(bookRepository, list);
+                if (list != null) {
+                    threads[i].start();
+                    i++;
+                }
             }
-        }
-        for (MyThread thread : threads) {
-            try {
-                if (thread != null)
-                    thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            for (MyThread thread : threads) {
+                try {
+                    if (thread != null)
+                        thread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+        } else {
+            insertBooks(books);
         }
     }
 
